@@ -48,10 +48,9 @@ impl Present {
         ];
 
         let min_perimeter = *perimeters.iter().min().unwrap();
-        dbg!(min_perimeter);
+
         //Bow = cubic feet of volume of present
         let bow_length = self.length * self.width * self.height;
-        dbg!(bow_length);
 
         return min_perimeter + bow_length;
     }
@@ -93,16 +92,19 @@ mod tests {
         let test_present = Present::new(2, 3, 4);
         assert_eq!(58, test_present.required_wrapping())
     }
+
     #[test]
     fn correct_wrapping_size_with_similar_dimensions() {
         let test_present = Present::new(1, 1, 10);
         assert_eq!(43, test_present.required_wrapping())
     }
+
     #[test]
     fn correct_bow_length_with_diff_dimensions() {
         let test_present = Present::new(2, 3, 4);
         assert_eq!(34, test_present.required_ribbon())
     }
+
     #[test]
     fn correct_bow_length_with_similar_dimensions() {
         let test_present = Present::new(1, 1, 10);

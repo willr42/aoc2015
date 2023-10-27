@@ -1,12 +1,18 @@
-use aoc2015::read_lines;
+use md5;
 
 fn main() {
-    if let Ok(lines) = read_lines("input/day3/day3input.txt") {
-        for line in lines {
-            if let Ok(present_str) = line {
-                // some logic here
-            }
+    let input_str = "iwrupvqb".to_string();
+    let mut counter: i128 = 0;
+
+    loop {
+        counter = counter + 1;
+        let input = input_str.clone() + &counter.to_string();
+        let hash = format!("{:x}", md5::compute(input));
+        let first_five = &hash[0..5];
+
+        if first_five == "000000" {
+            println!("The count is {}", counter);
+            break;
         }
-    };
-    println!("Result: {}", result)
+    }
 }

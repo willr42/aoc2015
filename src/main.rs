@@ -66,16 +66,54 @@ fn main() {
 }
 
 fn day6(test_input: &str) -> usize {
-    let light_grid = [[false; 999]; 999];
+    let mut light_grid = [[false; 1000]; 1000];
     if let Ok(lines) = read_lines("input/day6/input.txt") {
         for line in lines {
             // Each string
             if let Ok(current_line) = line {
                 let instruction = parse_instruction(current_line);
-                println!("{:?}", instruction)
+                if instruction.direction == Direction::On {
+                    let rows = &mut light_grid[instruction.start.0..instruction.stop.0];
+                    println!("start: {},{}", instruction.start.0, instruction.stop.0);
+                    println!("stop: {},{}", instruction.start.1, instruction.stop.1);
+                    for row in rows {
+                        let cols = &mut row[instruction.start.1..instruction.stop.1];
+                        for light in cols {
+                            *light = true;
+                        }
+                    }
+                } else if instruction.direction == Direction::Off {
+                    let rows = &mut light_grid[instruction.start.0..instruction.stop.0];
+                    for row in rows {
+                        let cols = &mut row[instruction.start.1..instruction.stop.1];
+                        for light in cols {
+                            *light = false;
+                        }
+                    }
+                } else if instruction.direction == Direction::Toggle {
+                    let rows = &mut light_grid[instruction.start.0..=instruction.stop.0];
+                    for row in rows {
+                        let cols = &mut row[instruction.start.1..=instruction.stop.1];
+                        for light in cols {
+                            if *light == true {
+                                *light = false;
+                            } else {
+                                *light = true;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
+
+    let final_count = light_grid
+        .iter()
+        .flat_map(|row| row.iter())
+        .filter(|&&light| light)
+        .count();
+
+    println!("{}", final_count);
     return 0;
 }
 

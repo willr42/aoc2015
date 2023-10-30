@@ -104,11 +104,19 @@ fn day6() -> usize {
         }
     }
 
-    for row in light_grid {
-        println!("{:?}", row);
+    let mut count = 0;
+    let mut iterator = light_grid.iter();
+    loop {
+        let row = iterator.next();
+        match row {
+            Some(col) => {
+                let total: usize = col.iter().sum();
+                count += total;
+            }
+            None => break,
+        }
     }
-
-    // println!("Total brightness: {}", brightness);
+    println!("{}", count);
 
     return 0;
 }

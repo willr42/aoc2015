@@ -62,11 +62,11 @@ fn parse_instruction(instruction_str: String) -> Instruction {
 }
 
 fn main() {
-    day6("test");
+    day6();
 }
 
-fn day6(test_input: &str) -> usize {
-    let mut light_grid = [[false; 1000]; 1000];
+fn day6() -> usize {
+    let mut light_grid = [[0; 1000]; 1000];
     if let Ok(lines) = read_lines("input/day6/input.txt") {
         for line in lines {
             // Each string
@@ -77,7 +77,7 @@ fn day6(test_input: &str) -> usize {
                     for row in rows {
                         let cols = &mut row[instruction.start.1..=instruction.stop.1];
                         for light in cols {
-                            *light = true;
+                            *light = *light + 1;
                         }
                     }
                 } else if instruction.direction == Direction::Off {
@@ -85,7 +85,10 @@ fn day6(test_input: &str) -> usize {
                     for row in rows {
                         let cols = &mut row[instruction.start.1..=instruction.stop.1];
                         for light in cols {
-                            *light = false;
+                            if *light == 0 {
+                                continue;
+                            }
+                            *light = *light - 1;
                         }
                     }
                 } else if instruction.direction == Direction::Toggle {
@@ -93,11 +96,7 @@ fn day6(test_input: &str) -> usize {
                     for row in rows {
                         let cols = &mut row[instruction.start.1..=instruction.stop.1];
                         for light in cols {
-                            if *light == true {
-                                *light = false;
-                            } else {
-                                *light = true;
-                            }
+                            *light = *light + 2;
                         }
                     }
                 }
@@ -105,17 +104,18 @@ fn day6(test_input: &str) -> usize {
         }
     }
 
-    let final_count = light_grid
-        .iter()
-        .flat_map(|row| row.iter())
-        .filter(|&&light| light)
-        .count();
+    for row in light_grid {
+        println!("{:?}", row);
+    }
+
+    // println!("Total brightness: {}", brightness);
 
     return 0;
 }
 
+#[cfg(test)]
 mod tests {
-    use crate::{day6, parse_instruction, Coordinate, Instruction};
+    use crate::{parse_instruction, Coordinate, Instruction};
 
     #[test]
     fn instruction_lights_on() {

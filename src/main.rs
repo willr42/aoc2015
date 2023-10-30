@@ -1,15 +1,13 @@
 use aoc2015::read_lines;
 
-/// One million lights to a 1000x1000 grid.
-/// Grid is numbered 0,999 on each dimension
+// One million lights to a 1000x1000 grid.
+// Grid is numbered 0,999 on each dimension
 
-/// turn on 0,0 through 999,999
-/// turn off 499,499 through 500,500 - turn off & leave off the middle 4 lights.
-/// toggle 0,0 through 999,0 - toggle first line of lights, turning off ones on, turning on ones off
-
-/// from 0 to 999
+/// From 0 to 999
+#[derive(Debug, PartialEq)]
 struct Coordinate(usize, usize);
 
+#[derive(Debug, PartialEq)]
 enum Direction {
     On,
     Off,
@@ -18,6 +16,7 @@ enum Direction {
 
 /// parsed from a string
 /// turn on 0,0 through 999,999
+#[derive(Debug, PartialEq)]
 struct Instruction {
     direction: Direction,
     start: Coordinate,
@@ -27,19 +26,38 @@ struct Instruction {
 fn parse_instruction(instruction_str: String) -> Instruction {
     let mut direction = Direction::Off;
 
-    for str in instruction_str.split(' ') {
-        match str {
-            "toggle" => direction = Direction::Toggle,
-            "off" => direction = Direction::Off,
+    let instruction_vec: Vec<&str> = instruction_str.split(" ").collect();
+
+    // Use index to track where we are in the 2x diff types of strings.
+    // Not proud of this code but it works
+    let mut index = 0;
+
+    if instruction_vec[index] == "toggle" {
+        direction = Direction::Toggle;
+        index += 1;
+    } else {
+        index += 1;
+        match instruction_vec[index] {
             "on" => direction = Direction::On,
-            _ => (),
-        };
-    }
+            "off" => direction = Direction::Off,
+            _ => panic!("Direction string should only be either on or off"),
+        }
+        index += 1;
+    };
+
+    let start_pos = instruction_vec[index].split_once(",").unwrap();
+    let x_min: usize = start_pos.0.parse().unwrap();
+    let y_min: usize = start_pos.1.parse().unwrap();
+    index += 2;
+
+    let end_pos = instruction_vec[index].split_once(",").unwrap();
+    let x_max: usize = end_pos.0.parse().unwrap();
+    let y_max: usize = end_pos.1.parse().unwrap();
 
     Instruction {
         direction,
-        start: Coordinate(0, 0),
-        stop: Coordinate(999, 999),
+        start: Coordinate(x_min, y_min),
+        stop: Coordinate(x_max, y_max),
     }
 }
 
@@ -49,21 +67,40 @@ fn main() {
 
 fn day6(test_input: &str) -> usize {
     let light_grid = [[false; 999]; 999];
-    dbg!(light_grid);
-    if let Ok(lines) = read_lines("input/day3/day3input.txt") {
+    if let Ok(lines) = read_lines("input/day6/input.txt") {
         for line in lines {
             // Each string
-            if let Ok(current_line) = line {}
+            if let Ok(current_line) = line {
+                let instruction = parse_instruction(current_line);
+                println!("{:?}", instruction)
+            }
         }
     }
     return 0;
 }
 
 mod tests {
-    use crate::day6;
+    use crate::{day6, parse_instruction, Coordinate, Instruction};
 
     #[test]
-    fn all_lights() {
-        let result = day6("turn on 0,0 through 999,999");
+    fn instruction_lights_on() {
+        let result = parse_instruction("turn on 0,0 through 999,999".to_string());
+        let expected = Instruction {
+            direction: crate::Direction::On,
+            start: Coordinate(0, 0),
+            stop: Coordinate(999, 999),
+        };
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn instruction_toggles_lights() {
+        let result = parse_instruction("toggle 0,0 through 999,999".to_string());
+        let expected = Instruction {
+            direction: crate::Direction::Toggle,
+            start: Coordinate(0, 0),
+            stop: Coordinate(999, 999),
+        };
+        assert_eq!(result, expected)
     }
 }

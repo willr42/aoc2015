@@ -73,19 +73,17 @@ fn day6(test_input: &str) -> usize {
             if let Ok(current_line) = line {
                 let instruction = parse_instruction(current_line);
                 if instruction.direction == Direction::On {
-                    let rows = &mut light_grid[instruction.start.0..instruction.stop.0];
-                    println!("start: {},{}", instruction.start.0, instruction.stop.0);
-                    println!("stop: {},{}", instruction.start.1, instruction.stop.1);
+                    let rows = &mut light_grid[instruction.start.0..=instruction.stop.0];
                     for row in rows {
-                        let cols = &mut row[instruction.start.1..instruction.stop.1];
+                        let cols = &mut row[instruction.start.1..=instruction.stop.1];
                         for light in cols {
                             *light = true;
                         }
                     }
                 } else if instruction.direction == Direction::Off {
-                    let rows = &mut light_grid[instruction.start.0..instruction.stop.0];
+                    let rows = &mut light_grid[instruction.start.0..=instruction.stop.0];
                     for row in rows {
-                        let cols = &mut row[instruction.start.1..instruction.stop.1];
+                        let cols = &mut row[instruction.start.1..=instruction.stop.1];
                         for light in cols {
                             *light = false;
                         }
@@ -113,7 +111,6 @@ fn day6(test_input: &str) -> usize {
         .filter(|&&light| light)
         .count();
 
-    println!("{}", final_count);
     return 0;
 }
 
